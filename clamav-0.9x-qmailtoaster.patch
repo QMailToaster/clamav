@@ -1,0 +1,96 @@
+diff -Naur clamav-0.97.5-original/etc/clamd.conf clamav-0.97.5/etc/clamd.conf
+--- clamav-0.97.5-original/etc/clamd.conf.sample	2012-06-12 06:03:00.000000000 -0500
++++ clamav-0.97.5/etc/clamd.conf	2012-07-20 10:58:00.000000000 -0500
+@@ -5,7 +5,7 @@
+ 
+ 
+ # Comment or remove the line below.
+-Example
++#Example
+ 
+ # Uncomment this option to enable logging.
+ # LogFile must be writable for the user running daemon.
+@@ -37,7 +37,7 @@
+ # Also log clean files. Useful in debugging but drastically increases the
+ # log size.
+ # Default: no
+-#LogClean yes
++LogClean yes
+ 
+ # Use system logger (can work together with LogFile).
+ # Default: no
+@@ -50,7 +50,7 @@
+ 
+ # Enable verbose logging.
+ # Default: no
+-#LogVerbose yes
++LogVerbose yes
+ 
+ # Enable log rotation. Always enabled when LogFileMaxSize is enabled.
+ # Default: no
+@@ -82,7 +82,7 @@
+ 
+ # Path to a local socket file the daemon will listen on.
+ # Default: disabled (must be specified by a user)
+-#LocalSocket /tmp/clamd.socket
++LocalSocket /tmp/clamd.socket
+ 
+ # Sets the group ownership on the unix socket.
+ # Default: disabled (the primary group of the user running clamd)
+@@ -94,7 +94,7 @@
+ 
+ # Remove stale socket after unclean shutdown.
+ # Default: yes
+-#FixStaleSocket yes
++FixStaleSocket yes
+ 
+ # TCP port address.
+ # Default: no
+@@ -202,7 +202,7 @@
+ 
+ # Don't fork into background.
+ # Default: no
+-#Foreground yes
++Foreground yes
+ 
+ # Enable debug messages in libclamav.
+ # Default: no
+@@ -317,7 +317,7 @@
+ # If you turn off this option, the original files will still be scanned, but
+ # without parsing individual messages/attachments.
+ # Default: yes
+-#ScanMail yes
++ScanMail yes
+ 
+ # Scan RFC1341 messages split over many emails.
+ # You will need to periodically clean up $TemporaryDirectory/clamav-partial directory.
+diff -Naur clamav-0.97.5-original/etc/freshclam.conf clamav-0.97.5/etc/freshclam.conf
+--- clamav-0.97.5-original/etc/freshclam.conf.sample	2012-06-12 06:36:00.000000000 -0500
++++ clamav-0.97.5/etc/freshclam.conf	2012-07-20 10:59:00.000000000 -0500
+@@ -5,7 +5,7 @@
+ 
+ 
+ # Comment or remove the line below.
+-Example
++#Example
+ 
+ # Path to the database directory.
+ # WARNING: It must match clamd.conf's directive!
+@@ -14,7 +14,7 @@
+ 
+ # Path to the log file (make sure it has proper permissions)
+ # Default: disabled
+-#UpdateLogFile /var/log/freshclam.log
++UpdateLogFile /var/log/clamav/freshclam.log
+ 
+ # Maximum size of the log file.
+ # Value of 0 disables the limit.
+@@ -140,7 +140,7 @@
+
+ # Run command after successful database update.
+ # Default: disabled
+-#OnUpdateExecute command
++OnUpdateExecute /var/qmail/bin/update-simscan
+
+ # Run command when database update process fails.
+ # Default: disabled
