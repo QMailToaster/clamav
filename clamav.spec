@@ -6,10 +6,10 @@ License:	GPL
 Group:		System Enviroment/Daemons
 URL:		http://www.clamav.net
 Source0:	http://downloads.sourceforge.net/clamav/%{name}-%{version}.tar.gz
-Source1:	https://raw.github.com/QMailToaster/pkgs/master/clamav/freshclam.logrotate
-Source2:	https://raw.github.com/QMailToaster/pkgs/master/clamav/freshclam.init
-Source3:	https://raw.github.com/QMailToaster/pkgs/master/clamav/clamav.run.supervise
-Source4:	https://raw.github.com/QMailToaster/pkgs/master/clamav/clamav.run.log.supervise
+Source1:	freshclam.logrotate
+Source2:	freshclam.init
+Source3:	clamav.run.supervise
+Source4:	clamav.run.log.supervise
 Patch0:		clamav-0.9x-qmailtoaster.patch
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -100,10 +100,10 @@ install etc/clamd.conf.sample     %{buildroot}%{_sysconfdir}/clamd.conf
 install etc/freshclam.conf.sample %{buildroot}%{_sysconfdir}/freshclam.conf.sample
 touch               %{buildroot}%{_sysconfdir}/freshclam.conf
 
-install %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/freshclam
-install %{SOURCE2} %{buildroot}%{_initpath}/freshclam
-install %{SOURCE3} %{buildroot}%{_spath}/clamd/run
-install %{SOURCE4} %{buildroot}%{_spath}/clamd/log/run
+install freshclam.logrotate   %{buildroot}%{_sysconfdir}/logrotate.d/freshclam
+install freshclam.init        %{buildroot}%{_initpath}/freshclam
+install clamav.run.supervise  %{buildroot}%{_spath}/clamd/run
+install clamav.log.supervise  %{buildroot}%{_spath}/clamd/log/run
 
 touch %{buildroot}/var/log/clamav/freshclam.log
 touch %{buildroot}%{_datadir}/clamav/main.cvd
