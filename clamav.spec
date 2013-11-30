@@ -100,10 +100,14 @@ install etc/clamd.conf.sample     %{buildroot}%{_sysconfdir}/clamd.conf
 install etc/freshclam.conf.sample %{buildroot}%{_sysconfdir}/freshclam.conf.sample
 touch               %{buildroot}%{_sysconfdir}/freshclam.conf
 
-install %{SOURCE1}  %{buildroot}%{_sysconfdir}/logrotate.d/freshclam
-install %{SOURCE2}  %{buildroot}%{_initpath}/freshclam
-install %{SOURCE3}  %{buildroot}%{_spath}/clamd/run
-install %{SOURCE4}  %{buildroot}%{_spath}/clamd/log/run
+install %{_sourcedir}/freshclam.logrotate \
+        %{buildroot}%{_sysconfdir}/logrotate.d/freshclam
+install %{_sourcedir}/freshclam.init \
+        %{buildroot}%{_initpath}/freshclam
+install %{_sourcedir}/clamav.run.supervise \
+        %{buildroot}%{_spath}/clamd/run
+install %{_sourcedir/clamav.run.log.supervise \
+        %{buildroot}%{_spath}/clamd/log/run
 
 touch %{buildroot}/var/log/clamav/freshclam.log
 touch %{buildroot}%{_datadir}/clamav/main.cvd
