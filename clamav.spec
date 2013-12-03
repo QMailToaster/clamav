@@ -102,13 +102,13 @@ install etc/freshclam.conf.sample %{buildroot}%{_sysconfdir}/freshclam.conf.samp
 touch               %{buildroot}%{_sysconfdir}/freshclam.conf
 
 install %{_sourcedir}/freshclam.logrotate \
-        %{buildroot}%{_sysconfdir}/logrotate.d/freshclam
+                              %{buildroot}%{_sysconfdir}/logrotate.d/freshclam
 install %{_sourcedir}/freshclam.init \
-        %{buildroot}%{_initpath}/freshclam
+                              %{buildroot}%{_initpath}/freshclam
 install %{_sourcedir}/clamav.run.supervise \
-        %{buildroot}%{_spath}/clamd/run
-install %{_sourcedir/clamav.run.log.supervise \
-        %{buildroot}%{_spath}/clamd/log/run
+                              %{buildroot}%{_spath}/clamd/run
+install %{_sourcedir}/clamav.run.log.supervise \
+                              %{buildroot}%{_spath}/clamd/log/run
 
 touch %{buildroot}/var/log/clamav/freshclam.log
 touch %{buildroot}%{_datadir}/clamav/main.cvd
