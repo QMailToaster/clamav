@@ -239,7 +239,7 @@ if [ -x /var/qmail/bin/update-simscan ]; then
 fi
 
 #-------------------------------------------------------------------------------
-%files 
+%files
 #-------------------------------------------------------------------------------
 %defattr(0644,root,root,0755)
 
@@ -273,10 +273,10 @@ fi
 %attr(-,root,root) %{_bindir}/fclamctl
 
 # Configuration
-%attr(0644,root,clamav) %config            %{_sysconfdir}/clamd.conf.sample
 %attr(0644,root,clamav) %config(noreplace) %{_sysconfdir}/clamd.conf
-%attr(0640,root,clamav) %config            %{_sysconfdir}/freshclam.conf.sample
+%attr(0644,root,clamav) %config            %{_sysconfdir}/clamd.conf.sample
 %attr(0640,root,clamav) %ghost             %{_sysconfdir}/freshclam.conf
+%attr(0640,root,clamav) %config            %{_sysconfdir}/freshclam.conf.sample
 %attr(0644,root,root)   %config(noreplace) %{_sysconfdir}/logrotate.d/freshclam
 
 # Data
