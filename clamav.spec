@@ -22,9 +22,9 @@ BuildRequires:	ncurses-devel
 BuildRequires:	zlib-devel
 Requires:	bzip2-libs
 Requires:	curl
-Requires:	qmail-toaster
 Requires:	gmp
 Requires:	libidn
+Requires:	qmail
 Requires:	zlib
 Obsoletes:	clamav-toaster
 BuildRoot:      %{_topdir}/BUILDROOT/%{name}-%{version}-%{release}.%{_arch}
