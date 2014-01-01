@@ -4,8 +4,9 @@ Version:	0.98
 Release:	0%{?dist}
 License:	GPL
 Group:		System Enviroment/Daemons
-URL:		http://www.clamav.net
+Vendor:         QmailToaster
 Packager:	Eric Shubert <qmt-build@datamatters.us>
+URL:		http://www.clamav.net
 Source0:	http://downloads.sourceforge.net/clamav/%{name}-%{version}.tar.gz
 Source1:	freshclam.logrotate
 Source2:	freshclam.init
