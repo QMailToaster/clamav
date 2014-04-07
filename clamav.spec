@@ -8,9 +8,8 @@ Vendor:         QmailToaster
 Packager:	Eric Shubert <qmt-build@datamatters.us>
 URL:		http://www.clamav.net
 Source0:	http://downloads.sourceforge.net/clamav/%{name}-%{version}.tar.gz
-Source1:	freshclam.logrotate
-Source2:	freshclam.init
-Source3:	clamav.run.supervise
+Source1:	freshclam.init
+Source2:	clamav.run.supervise
 Patch0:		clamav-0.9x-qmailtoaster.patch
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -32,7 +31,6 @@ BuildRoot:      %{_topdir}/BUILDROOT/%{name}-%{version}-%{release}.%{_arch}
 %define debug_package %{nil}
 %define _initpath     /etc/rc.d/init.d
 %define _qdir         /var/qmail
-%define _qtlogdir     /var/log/qmail
 %define _spath        %{_qdir}/supervise
 %define ccflags       %{optflags}
 %define ldflags       %{optflags}
@@ -80,8 +78,6 @@ sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 rm -rf %{buildroot}
 install -d %{buildroot}%{_initpath}/
 install -d %{buildroot}%{_sysconfdir}/cron.daily
-install -d %{buildroot}%{_sysconfdir}/logrotate.d
-install -d %{buildroot}/var/log/clamav
 install -d %{buildroot}/var/run/clamav
 install -d %{buildroot}/var/spool/clamav
 
@@ -97,23 +93,18 @@ rm -rf %{buildroot}%{_mandir}/man8/clamav-milter.8*
 sed -e 's|^#LogSyslog yes|LogSyslog yes|g' \
     -e 's|^#LogFacility LOG_MAIL|LogFacility LOG_MAIL|g' \
         etc/clamd.conf.sample   > %{buildroot}%{_sysconfdir}/clamd.conf
-install etc/freshclam.conf.sample %{buildroot}%{_sysconfdir}/freshclam.conf.sample
-touch               %{buildroot}%{_sysconfdir}/freshclam.conf
+#install etc/freshclam.conf.sample %{buildroot}%{_sysconfdir}/freshclam.conf.sample
+sed -e 's|^UpdateLogFile |#UpdateLogFile |g' \
+    -e 's|^#LogSyslog yes|LogSyslog yes|g' \
+    -e 's|^#LogFacility LOG_MAIL|LogFacility LOG_MAIL|g' \
+        etc/freshclam.conf.sample  > %{buildroot}%{_sysconfdir}/freshclam.conf
 
-install %{SOURCE1}  %{buildroot}%{_sysconfdir}/logrotate.d/freshclam
-install %{SOURCE2}  %{buildroot}%{_initpath}/freshclam
-install %{SOURCE3}  %{buildroot}%{_spath}/clamd/run
+install %{SOURCE1}  %{buildroot}%{_initpath}/freshclam
+install %{SOURCE2}  %{buildroot}%{_spath}/clamd/run
 
-touch %{buildroot}/var/log/clamav/freshclam.log
 touch %{buildroot}%{_datadir}/clamav/main.cvd
 touch %{buildroot}%{_datadir}/clamav/daily.cvd
 touch %{buildroot}%{_datadir}/clamav/bytecode.cvd
-
-# Make freshclam sym link
-#-------------------------------------------------------------------------------
-pushd %{buildroot}%{_bindir}
-  ln -s ../..%{_initpath}/freshclam fclamctl
-popd
 
 #-------------------------------------------------------------------------------
 %clean
@@ -168,14 +159,12 @@ if [ -z "$CODE" ]; then
   export CODE="local"
 fi
 
-sed -e "s%^#DatabaseMirror .*%DatabaseMirror db.$CODE.clamav.net%" \
-      %{_sysconfdir}/freshclam.conf.sample \
-     >%{_sysconfdir}/freshclam.conf
+sed -i "s%^#DatabaseMirror .*%DatabaseMirror db.$CODE.clamav.net%" \
+      %{_sysconfdir}/freshclam.conf
 
-if [ -f %{_sysconfdir}/freshclam.conf.sample.rpmnew ]; then
-  sed -e "s%^#DatabaseMirror .*%DatabaseMirror db.$CODE.clamav.net%" \
-        %{_sysconfdir}/freshclam.conf.sample.rpmnew \
-       >%{_sysconfdir}/freshclam.conf.rpmnew
+if [ -f %{_sysconfdir}/freshclam.conf.rpmnew ]; then
+  sed -i "s%^#DatabaseMirror .*%DatabaseMirror db.$CODE.clamav.net%" \
+        %{_sysconfdir}/freshclam.conf.rpmnew
 fi
 
 /sbin/chkconfig --add freshclam  
@@ -259,18 +248,13 @@ fi
 %attr(0755,root,root) %{_initpath}/freshclam
 %attr(0751,qmaill,qmail) %{_spath}/clamd/run
 
-# Sym Link
-%attr(-,root,root) %{_bindir}/fclamctl
-
 # Configuration
 %attr(0644,root,clamav) %config(noreplace) %{_sysconfdir}/clamd.conf
 %attr(0644,root,clamav) %config            %{_sysconfdir}/clamd.conf.sample
-%attr(0640,root,clamav) %ghost             %{_sysconfdir}/freshclam.conf
+%attr(0640,root,clamav) %config(noreplace) %{_sysconfdir}/freshclam.conf
 %attr(0640,root,clamav) %config            %{_sysconfdir}/freshclam.conf.sample
-%attr(0644,root,root)   %config(noreplace) %{_sysconfdir}/logrotate.d/freshclam
 
 # Data
-%attr(0640,clamav,clamav) %ghost /var/log/clamav/freshclam.log
 # These will be fetched by freshclam beginning with 0.97.5-1.4.1
 %attr(0644,clamav,clamav) %ghost %{_datadir}/clamav/main.cvd
 %attr(0644,clamav,clamav) %ghost %{_datadir}/clamav/daily.cvd
@@ -298,6 +282,7 @@ fi
 #-------------------------------------------------------------------------------
 * Mon Apr 7 2014 Eric Shubert <eric@datamatters.us> 0.98.1-1.qt
 - Changed logging to use syslog
+- Removed fclamctl link in bindir
 * Fri Jan 17 2014 Eric Shubert <eric@datamatters.us> 0.98.1-0.qt
 - Updated clamav sources to 0.98.1
 * Fri Nov 15 2013 Eric Shubert <eric@datamatters.us> 0.98-0.qt
