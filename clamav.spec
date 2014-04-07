@@ -226,13 +226,11 @@ fi
 %defattr(0644,root,root,0755)
 
 # Dirs
-%attr(0755,clamav,clamav) %dir /var/log/clamav
 %attr(0755,clamav,clamav) %dir /var/run/clamav
 %attr(0755,root,qmail)    %dir %{_qdir}
 %attr(0755,qmaill,qmail)  %dir %{_spath}
 %attr(1700,qmaill,qmail)  %dir %{_spath}/clamd
 %attr(0755,qmaill,qmail)  %dir %{_spath}/clamd/supervise
-%attr(0700,qmaill,qmail)  %dir /var/log/qmail
 %attr(0755,clamav,clamav) %dir %{_datadir}/clamav
 
 # Executables
