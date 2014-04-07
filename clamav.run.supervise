@@ -1,2 +1,2 @@
 #!/bin/sh
-exec /usr/bin/setuidgid clamav /usr/sbin/clamd 2>&1
+exec /usr/bin/setuidgid clamav /usr/sbin/clamd >/dev/null 2>&1
