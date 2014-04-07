@@ -1,7 +1,7 @@
 Name:		clamav
 Summary:	ClamAV for QMail Toaster
 Version:	0.98.1
-Release:	0%{?dist}
+Release:	1%{?dist}
 License:	GPL
 Group:		System Enviroment/Daemons
 Vendor:         QmailToaster
@@ -11,7 +11,6 @@ Source0:	http://downloads.sourceforge.net/clamav/%{name}-%{version}.tar.gz
 Source1:	freshclam.logrotate
 Source2:	freshclam.init
 Source3:	clamav.run.supervise
-Source4:	clamav.run.log.supervise
 Patch0:		clamav-0.9x-qmailtoaster.patch
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -91,21 +90,19 @@ install -d %{buildroot}/var/spool/clamav
 install -d %{buildroot}%{_qdir}
 install -d %{buildroot}%{_spath}
 install -d %{buildroot}%{_spath}/clamd
-install -d %{buildroot}%{_spath}/clamd/log
 install -d %{buildroot}%{_spath}/clamd/supervise
 install -d %{buildroot}%{_datadir}/clamav
-install -d %{buildroot}/var/log/qmail
-install -d %{buildroot}/var/log/qmail/clamd
 
 rm -rf %{buildroot}%{_mandir}/man8/clamav-milter.8*
-install etc/clamd.conf.sample     %{buildroot}%{_sysconfdir}/clamd.conf
+sed -e 's|^#LogSyslog yes|LogSyslog yes|g' \
+    -e 's|^#LogFacility LOG_MAIL|LogFacility LOG_MAIL|g' \
+        etc/clamd.conf.sample   > %{buildroot}%{_sysconfdir}/clamd.conf
 install etc/freshclam.conf.sample %{buildroot}%{_sysconfdir}/freshclam.conf.sample
 touch               %{buildroot}%{_sysconfdir}/freshclam.conf
 
 install %{SOURCE1}  %{buildroot}%{_sysconfdir}/logrotate.d/freshclam
 install %{SOURCE2}  %{buildroot}%{_initpath}/freshclam
 install %{SOURCE3}  %{buildroot}%{_spath}/clamd/run
-install %{SOURCE4}  %{buildroot}%{_spath}/clamd/log/run
 
 touch %{buildroot}/var/log/clamav/freshclam.log
 touch %{buildroot}%{_datadir}/clamav/main.cvd
@@ -222,7 +219,6 @@ fi
 #-------------------------------------------------------------------------------
 if [ $1 = "0" ]; then
   rm -fR %{_spath}/clamd/
-  rm -fR %{_qtlogdir}/clamd/
 fi
 
 #-------------------------------------------------------------------------------
@@ -246,10 +242,8 @@ fi
 %attr(0755,root,qmail)    %dir %{_qdir}
 %attr(0755,qmaill,qmail)  %dir %{_spath}
 %attr(1700,qmaill,qmail)  %dir %{_spath}/clamd
-%attr(0700,qmaill,qmail)  %dir %{_spath}/clamd/log
 %attr(0755,qmaill,qmail)  %dir %{_spath}/clamd/supervise
 %attr(0700,qmaill,qmail)  %dir /var/log/qmail
-%attr(0755,qmaill,qmail)  %dir /var/log/qmail/clamd
 %attr(0755,clamav,clamav) %dir %{_datadir}/clamav
 
 # Executables
@@ -264,7 +258,6 @@ fi
 %attr(0755,root,root) %{_sbindir}/clamd
 %attr(0755,root,root) %{_initpath}/freshclam
 %attr(0751,qmaill,qmail) %{_spath}/clamd/run
-%attr(0751,qmaill,qmail) %{_spath}/clamd/log/run
 
 # Sym Link
 %attr(-,root,root) %{_bindir}/fclamctl
@@ -303,6 +296,8 @@ fi
 #-------------------------------------------------------------------------------
 %changelog
 #-------------------------------------------------------------------------------
+* Mon Apr 7 2014 Eric Shubert <eric@datamatters.us> 0.98.1-1.qt
+- Changed logging to use syslog
 * Fri Jan 17 2014 Eric Shubert <eric@datamatters.us> 0.98.1-0.qt
 - Updated clamav sources to 0.98.1
 * Fri Nov 15 2013 Eric Shubert <eric@datamatters.us> 0.98-0.qt
