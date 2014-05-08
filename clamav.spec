@@ -235,14 +235,15 @@ fi
 %attr(0755,clamav,clamav) %dir %{_datadir}/clamav
 
 # Executables
-%attr(0755,root,root) %{_bindir}/clamscan
-%attr(0755,root,root) %{_bindir}/clamdscan
-%attr(0755,root,root) %{_bindir}/freshclam
-%attr(0755,root,root) %{_bindir}/clamdtop
 %attr(0755,root,root) %{_bindir}/clamav-config
-%attr(0755,root,root) %{_bindir}/clamconf
-%attr(0755,root,root) %{_bindir}/sigtool
 %attr(0755,root,root) %{_bindir}/clambc
+%attr(0755,root,root) %{_bindir}/clamconf
+%attr(0755,root,root) %{_bindir}/clamdscan
+%attr(0755,root,root) %{_bindir}/clamdtop
+%attr(0755,root,root) %{_bindir}/clamscan
+%attr(0755,root,root) %{_bindir}/clamsubmit
+%attr(0755,root,root) %{_bindir}/freshclam
+%attr(0755,root,root) %{_bindir}/sigtool
 %attr(0755,root,root) %{_sbindir}/clamd
 %attr(0755,root,root) %{_initpath}/freshclam
 %attr(0751,qmaill,qmail) %{_spath}/clamd/run
@@ -282,6 +283,7 @@ fi
 * Thu May 8 2014 Eric Shubert <eric@datamatters.us> 0.98.3-0.qt
 - Updated clamav sources to 0.98.3
 - Added openssl requirement
+- Added clamsubmit executable
 * Mon Apr 7 2014 Eric Shubert <eric@datamatters.us> 0.98.1-1.qt
 - Changed logging to use syslog
 - Removed fclamctl link in bindir
