@@ -1,7 +1,7 @@
 Name:		clamav
 Summary:	ClamAV for QMail Toaster
-Version:	0.98.1
-Release:	1%{?dist}
+Version:	0.98.3
+Release:	0%{?dist}
 License:	GPL
 Group:		System Enviroment/Daemons
 Vendor:         QmailToaster
@@ -23,6 +23,7 @@ Requires:	bzip2-libs
 Requires:	curl
 Requires:	gmp
 Requires:	libidn
+Requires:	openssl
 Requires:	qmail
 Requires:	zlib
 Obsoletes:	clamav-toaster
@@ -278,6 +279,9 @@ fi
 #-------------------------------------------------------------------------------
 %changelog
 #-------------------------------------------------------------------------------
+* Thu May 8 2014 Eric Shubert <eric@datamatters.us> 0.98.3-0.qt
+- Updated clamav sources to 0.98.3
+- Added openssl requirement
 * Mon Apr 7 2014 Eric Shubert <eric@datamatters.us> 0.98.1-1.qt
 - Changed logging to use syslog
 - Removed fclamctl link in bindir
