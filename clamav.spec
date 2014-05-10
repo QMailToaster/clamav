@@ -65,7 +65,17 @@ Most importantly, the virus database is kept up to date .
 #%{__autoconf}
 #%{__automake}
 %configure \
-      --disable-clamav
+      --disable-clamav \
+      --disable-llvm \
+      --disable-static \
+      --disable-zlib-vcheck \
+      --enable-check \
+      --enable-clamdtop \
+      --enable-dns \
+      --enable-id-check \
+      --with-libcurl
+### Disable JIT until it is implemented securely (RHbz #573191)
+#      --enable-llvm \
 
 # shubes 9/27/13 - added per http://fedoraproject.org/wiki/RPath_Packaging_Draft
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
@@ -284,6 +294,7 @@ fi
 - Updated clamav sources to 0.98.3
 - Added openssl requirement
 - Added clamsubmit executable
+- Changed configure flags to be more in line with repoforge
 * Mon Apr 7 2014 Eric Shubert <eric@datamatters.us> 0.98.1-1.qt
 - Changed logging to use syslog
 - Removed fclamctl link in bindir
