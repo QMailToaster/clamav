@@ -71,12 +71,15 @@ Most importantly, the virus database is kept up to date .
       --disable-clamav \
       --disable-llvm \
       --disable-static \
-      --disable-zlib-vcheck \
       --enable-check \
       --enable-clamdtop \
       --enable-dns \
       --enable-id-check \
-      --with-libcurl
+
+### this causes warning message about bugged system libraries
+#      --disable-zlib-vcheck \
+### configure doesn't appear to find libcurl when curl-devel installed
+#      --with-libcurl \
 ### Disable JIT until it is implemented securely (RHbz #573191)
 #      --enable-llvm \
 
