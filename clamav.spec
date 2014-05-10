@@ -257,6 +257,7 @@ fi
 %attr(0755,root,root) %{_bindir}/clamdscan
 %attr(0755,root,root) %{_bindir}/clamdtop
 %attr(0755,root,root) %{_bindir}/clamscan
+%attr(0755,root,root) %{_bindir}/clamsubmit
 %attr(0755,root,root) %{_bindir}/freshclam
 %attr(0755,root,root) %{_bindir}/sigtool
 %attr(0755,root,root) %{_sbindir}/clamd
@@ -299,6 +300,7 @@ fi
 - Updated clamav sources to 0.98.3
 - Added openssl requirement
 - Changed configure flags to be more in line with repoforge
+- Added clamsubmit
 * Mon Apr 7 2014 Eric Shubert <eric@datamatters.us> 0.98.1-1.qt
 - Changed logging to use syslog
 - Removed fclamctl link in bindir
