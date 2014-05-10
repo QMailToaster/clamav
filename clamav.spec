@@ -14,6 +14,7 @@ Patch0:		clamav-0.9x-qmailtoaster.patch
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	bzip2-devel
+BuildRequires:	check-devel
 BuildRequires:	curl-devel
 BuildRequires:	gmp-devel
 BuildRequires:	libidn-devel
