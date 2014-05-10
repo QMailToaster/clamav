@@ -18,12 +18,14 @@ BuildRequires:	check-devel
 BuildRequires:	curl-devel
 BuildRequires:	gmp-devel
 BuildRequires:	libidn-devel
+BuildRequires:	libxml2-devel
 BuildRequires:	ncurses-devel
 BuildRequires:	zlib-devel
 Requires:	bzip2-libs
 Requires:	curl
 Requires:	gmp
 Requires:	libidn
+Requires:	libxml2
 Requires:	openssl
 Requires:	qmail
 Requires:	zlib
