@@ -73,6 +73,8 @@ Most importantly, the virus database is kept up to date.
       --enable-dns \
       --enable-id-check \
       --with-dbdir=/var/lib/clamav \
+      --with-group=clamav \
+      --with-user=clamav \
 
 ### this causes warning message about bugged system libraries
 #      --disable-zlib-vcheck \
