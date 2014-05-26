@@ -102,6 +102,7 @@ rm -rf %{buildroot}%{_mandir}/man8/clamav-milter.8*
 sed -e 's|^#LogSyslog yes|LogSyslog yes|g' \
     -e 's|^#LogFacility LOG_MAIL|LogFacility LOG_MAIL|g' \
     -e 's|^#User clamav|User clamav|g' \
+    -e 's|^Foreground |#Foreground |g' \
         etc/clamd.conf.sample   > %{buildroot}%{_sysconfdir}/clamd.conf
 #install etc/freshclam.conf.sample %{buildroot}%{_sysconfdir}/freshclam.conf.sample
 sed -e 's|^UpdateLogFile |#UpdateLogFile |g' \
