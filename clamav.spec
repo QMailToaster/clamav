@@ -227,6 +227,7 @@ fi
 %attr(0755,root,root) %{_bindir}/freshclam
 %attr(0755,root,root) %{_bindir}/sigtool
 %attr(0755,root,root) %{_sbindir}/clamd
+%attr(0755,root,root) %{_initpath}/clamd
 %attr(0755,root,root) %{_initpath}/freshclam
 
 # Configuration
