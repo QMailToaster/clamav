@@ -1,7 +1,7 @@
 Name:		clamav
 Summary:	ClamAV for QMail Toaster
 Version:	0.98.3
-Release:	0%{?dist}
+Release:	1%{?dist}
 License:	GPL
 Group:		System Enviroment/Daemons
 Vendor:         QmailToaster
@@ -9,7 +9,7 @@ Packager:	Eric Shubert <qmt-build@datamatters.us>
 URL:		http://www.clamav.net
 Source0:	http://downloads.sourceforge.net/clamav/%{name}-%{version}.tar.gz
 Source1:	freshclam.init
-Source2:	clamav.run.supervise
+Source2:	clamd.init
 Patch0:		clamav-0.9x-qmailtoaster.patch
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -27,15 +27,12 @@ Requires:	gmp
 Requires:	libidn
 Requires:	libxml2
 Requires:	openssl
-Requires:	qmail
 Requires:	zlib
 Obsoletes:	clamav-toaster
 BuildRoot:      %{_topdir}/BUILDROOT/%{name}-%{version}-%{release}.%{_arch}
 
 %define debug_package %{nil}
 %define _initpath     /etc/rc.d/init.d
-%define _qdir         /var/qmail
-%define _spath        %{_qdir}/supervise
 %define ccflags       %{optflags}
 %define ldflags       %{optflags}
 
@@ -48,7 +45,7 @@ The package provides a flexible and scalable multi-threaded daemon,
 a command line scanner, and a tool for automatic updating via Internet.
 The programs are based on a shared library distributed with package,
 which you can use with your own software.
-Most importantly, the virus database is kept up to date .
+Most importantly, the virus database is kept up to date.
 
 #-------------------------------------------------------------------------------
 %prep
@@ -75,6 +72,7 @@ Most importantly, the virus database is kept up to date .
       --enable-clamdtop \
       --enable-dns \
       --enable-id-check \
+      --with-dbdir=/var/lib/clamav \
 
 ### this causes warning message about bugged system libraries
 #      --disable-zlib-vcheck \
@@ -94,17 +92,9 @@ sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 #-------------------------------------------------------------------------------
 rm -rf %{buildroot}
 install -d %{buildroot}%{_initpath}/
-install -d %{buildroot}%{_sysconfdir}/cron.daily
-install -d %{buildroot}/var/run/clamav
-install -d %{buildroot}/var/spool/clamav
+install -d %{buildroot}%{_localstatedir}/{lib,run}/clamav
 
 %{__make} DESTDIR=%{buildroot} install
-
-install -d %{buildroot}%{_qdir}
-install -d %{buildroot}%{_spath}
-install -d %{buildroot}%{_spath}/clamd
-install -d %{buildroot}%{_spath}/clamd/supervise
-install -d %{buildroot}%{_datadir}/clamav
 
 rm -rf %{buildroot}%{_mandir}/man8/clamav-milter.8*
 sed -e 's|^#LogSyslog yes|LogSyslog yes|g' \
@@ -117,11 +107,11 @@ sed -e 's|^UpdateLogFile |#UpdateLogFile |g' \
         etc/freshclam.conf.sample  > %{buildroot}%{_sysconfdir}/freshclam.conf
 
 install %{SOURCE1}  %{buildroot}%{_initpath}/freshclam
-install %{SOURCE2}  %{buildroot}%{_spath}/clamd/run
+install %{SOURCE2}  %{buildroot}%{_initpath}/clamd
 
-touch %{buildroot}%{_datadir}/clamav/main.cvd
-touch %{buildroot}%{_datadir}/clamav/daily.cvd
-touch %{buildroot}%{_datadir}/clamav/bytecode.cvd
+touch %{buildroot}%{_localstatedir}/lib/clamav/main.cvd
+touch %{buildroot}%{_localstatedir}/lib/clamav/daily.cvd
+touch %{buildroot}%{_localstatedir}/lib/clamav/bytecode.cvd
 
 #-------------------------------------------------------------------------------
 %clean
@@ -139,29 +129,11 @@ if [ -z "`/usr/bin/id -u clamav 2>/dev/null`" ]; then
 fi
 
 # need to kill freshclam here if it's running
-# but only if we're not installing in a sandbox.
-if [ ! -f /boot/.qtp-sandbox ]; then
-  killall -TERM freshclam > /dev/null 2>&1 || :
-fi
+killall -TERM freshclam > /dev/null 2>&1 || :
 
 #-------------------------------------------------------------------------------
 %post
 #-------------------------------------------------------------------------------
-
-# Remove old/duplicate database files if they exist
-# Note, as best as I can tell, database files are downloaded as .cvd files,
-# but once freshclam updates them, they're converted to .cld files.
-datadir=/usr/share/clamav
-for oldfile in daily.inc main.inc; do
-  if [ -e $datadir/$oldfile ]; then
-    rm -rf $datadir/$oldfile
-  fi
-done
-for dupfile in bytecode daily main; do
-  if [ -e $datadir/$dupfile.cld ] && [ -e $datadir/$dupfile.cvd ]; then
-    rm -f $datadir/$dupfile.cvd
-  fi
-done
 
 # Use country mirror for virus DB
 ZONES="/usr/share/zoneinfo/zone.tab"
@@ -186,55 +158,53 @@ fi
 
 /sbin/chkconfig --add freshclam  
 /sbin/chkconfig freshclam on
+/sbin/service freshclam start > /dev/null 2>&1
 
-# if we're installing in a sandbox, then
-#   touch the database files so that simscan will build
-# otherwise
-#   run freshclam to get/update definition files
-#   start freshclam daemon
-if [ -f /boot/.qtp-sandbox ]; then
-  mkdir -p %{_datadir}/clamav
-  touch %{_datadir}/clamav/main.cvd
-  touch %{_datadir}/clamav/daily.cvd
-  touch %{_datadir}/clamav/bytecode.cvd
-else
-  freshclam
-  /sbin/service freshclam start > /dev/null 2>&1
-fi
+/sbin/chkconfig --add clamd
+/sbin/chkconfig clamd on
+#/sbin/service clamd start > /dev/null 2>&1
+
+# Remove old virus database files if they exist,
+# and move them to the new location
+# Note, as best as I can tell, database files are downloaded as .cvd files,
+# but once freshclam updates them, they're converted to .cld files.
+
+olddir=/usr/share/clamav
+for oldfile in daily.inc main.inc; do
+  if [ -e $olddir/$oldfile ]; then
+    rm -rf $olddir/$oldfile
+  fi
+done
+for dupfile in bytecode daily main; do
+  if [ -e $olddir/$dupfile.cld ] && [ -e $olddir/$dupfile.cvd ]; then
+    rm -f $olddir/$dupfile.cvd
+  fi
+  if [ -e $olddir/$dupfile.* ]; then
+    mv $olddir/$dupfile.* %{_localstatedir}/lib/clamav/.
+  fi
+done
 
 #-------------------------------------------------------------------------------
 %preun
 #-------------------------------------------------------------------------------
 if [ $1 -eq 0 ]; then
   userdel clamav
-
+  /sbin/chkconfig --del clamd
   /sbin/chkconfig --del freshclam 
-
-  # Remove runlevel links
-  rm -f %{_sysconfdir}/rc0.d/K30freshclam 2>&1 > /dev/null
-  rm -f %{_sysconfdir}/rc1.d/K30freshclam 2>&1 > /dev/null
-  rm -f %{_sysconfdir}/rc2.d/S80freshclam 2>&1 > /dev/null
-  rm -f %{_sysconfdir}/rc3.d/S80freshclam 2>&1 > /dev/null
-  rm -f %{_sysconfdir}/rc4.d/S80freshclam 2>&1 > /dev/null
-  rm -f %{_sysconfdir}/rc5.d/S80freshclam 2>&1 > /dev/null
-  rm -f %{_sysconfdir}/rc6.d/K30freshclam 2>&1 > /dev/null
 fi
 
 #-------------------------------------------------------------------------------
 %postun
 #-------------------------------------------------------------------------------
-if [ $1 = "0" ]; then
-  rm -fR %{_spath}/clamd/
-fi
 
 #-------------------------------------------------------------------------------
 # triggerin is executed after clamav is installed, if simscan is installed
 # *and* after simscan is installed while clamav is installed
 #-------------------------------------------------------------------------------
-%triggerin -- simscan-toaster
+%triggerin -- simscan
 #-------------------------------------------------------------------------------
 if [ -x /var/qmail/bin/update-simscan ]; then
-  /var/qmail/bin/update-simscan
+  /var/qmail/bin/update-simscan >/dev/null 2>&1 || :
 fi
 
 #-------------------------------------------------------------------------------
@@ -244,11 +214,7 @@ fi
 
 # Dirs
 %attr(0755,clamav,clamav) %dir /var/run/clamav
-%attr(0755,root,qmail)    %dir %{_qdir}
-%attr(0755,qmaill,qmail)  %dir %{_spath}
-%attr(1700,qmaill,qmail)  %dir %{_spath}/clamd
-%attr(0755,qmaill,qmail)  %dir %{_spath}/clamd/supervise
-%attr(0755,clamav,clamav) %dir %{_datadir}/clamav
+%attr(0755,clamav,clamav) %dir %{_localstatedir}/lib/clamav
 
 # Executables
 %attr(0755,root,root) %{_bindir}/clamav-config
@@ -262,7 +228,6 @@ fi
 %attr(0755,root,root) %{_bindir}/sigtool
 %attr(0755,root,root) %{_sbindir}/clamd
 %attr(0755,root,root) %{_initpath}/freshclam
-%attr(0751,qmaill,qmail) %{_spath}/clamd/run
 
 # Configuration
 %attr(0644,root,clamav) %config(noreplace) %{_sysconfdir}/clamd.conf
@@ -270,11 +235,10 @@ fi
 %attr(0640,root,clamav) %config(noreplace) %{_sysconfdir}/freshclam.conf
 %attr(0640,root,clamav) %config            %{_sysconfdir}/freshclam.conf.sample
 
-# Data
-# These will be fetched by freshclam beginning with 0.97.5-1.4.1
-%attr(0644,clamav,clamav) %ghost %{_datadir}/clamav/main.cvd
-%attr(0644,clamav,clamav) %ghost %{_datadir}/clamav/daily.cvd
-%attr(0644,clamav,clamav) %ghost %{_datadir}/clamav/bytecode.cvd
+# Virus definitions, will be obtained by freshclam
+%attr(0644,clamav,clamav) %ghost %{_localstatedir}/lib/clamav/main.cvd
+%attr(0644,clamav,clamav) %ghost %{_localstatedir}/lib/clamav/daily.cvd
+%attr(0644,clamav,clamav) %ghost %{_localstatedir}/lib/clamav/bytecode.cvd
 
 # Devel
 %attr(0644,root,root) %{_includedir}/clamav.h
@@ -296,6 +260,10 @@ fi
 #-------------------------------------------------------------------------------
 %changelog
 #-------------------------------------------------------------------------------
+* Mon May 26 2014 Eric Shubert <eric@datamatters.us> 0.98.3-1.qt
+- Removed explicit run of freshclam
+- Relocated virus definitions to /var/lib/clamav/
+- Changed to use init file instead of supervise run
 * Thu May 8 2014 Eric Shubert <eric@datamatters.us> 0.98.3-0.qt
 - Updated clamav sources to 0.98.3
 - Added openssl requirement
