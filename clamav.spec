@@ -255,7 +255,7 @@ fi
 
 # Documents
 %doc AUTHORS BUGS COPYING ChangeLog FAQ INSTALL NEWS README
-%doc docs/*.pdf test/
+%doc docs/*.pdf
 
 # Man pages
 %{_mandir}/man1/*
