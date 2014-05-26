@@ -64,6 +64,7 @@ Most importantly, the virus database is kept up to date.
 #%{__aclocal}
 #%{__autoconf}
 #%{__automake}
+sed -i -e 's|test/Makefile unit_tests/Makefile ||g' configure
 %configure \
       --disable-clamav \
       --disable-llvm \
