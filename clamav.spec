@@ -65,6 +65,8 @@ Most importantly, the virus database is kept up to date.
 #%{__autoconf}
 #%{__automake}
 sed -i -e 's|test/Makefile unit_tests/Makefile ||g' configure
+sed -i -e 's|clamav-milter test clamdtop|clamav-milter clamdtop|g' \
+       -e 's|clambc unit_tests clamsubmit|clambc clamsubmit|g' Makefile
 %configure \
       --disable-clamav \
       --disable-llvm \
