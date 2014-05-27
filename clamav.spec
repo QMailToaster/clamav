@@ -65,8 +65,6 @@ Most importantly, the virus database is kept up to date.
 #%{__autoconf}
 #%{__automake}
 sed -i -e 's|test/Makefile unit_tests/Makefile ||g' configure
-sed -i -e 's|clamav-milter test clamdtop|clamav-milter clamdtop|g' \
-       -e 's|clambc unit_tests clamsubmit|clambc clamsubmit|g' Makefile
 %configure \
       --disable-clamav \
       --disable-llvm \
@@ -90,6 +88,9 @@ sed -i -e 's|clamav-milter test clamdtop|clamav-milter clamdtop|g' \
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 
+# shubes 5/26/14 - remove test and unit_tests 
+sed -i -e 's|clamav-milter test clamdtop|clamav-milter clamdtop|g' \
+       -e 's|clambc unit_tests clamsubmit|clambc clamsubmit|g' Makefile
 %{__make}
 
 #-------------------------------------------------------------------------------
