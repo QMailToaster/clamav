@@ -90,7 +90,8 @@ sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 
 # shubes 5/26/14 - remove test and unit_tests 
 sed -i -e 's|clamav-milter test clamdtop|clamav-milter clamdtop|g' \
-       -e 's|clambc unit_tests clamsubmit|clambc clamsubmit|g' Makefile
+       -e 's|clambc unit_tests clamsubmit|clambc clamsubmit|g' \
+       -e 's|unit_tests \$(am|\$(am|g' Makefile
 %{__make}
 
 #-------------------------------------------------------------------------------
