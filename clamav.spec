@@ -1,7 +1,7 @@
 Name:		clamav
 Summary:	ClamAV for QMail Toaster
-Version:	0.98.3
-Release:	1%{?dist}
+Version:	0.98.4
+Release:	0%{?dist}
 License:	GPL
 Group:		System Enviroment/Daemons
 Vendor:         QmailToaster
@@ -270,6 +270,8 @@ fi
 #-------------------------------------------------------------------------------
 %changelog
 #-------------------------------------------------------------------------------
+* Thu Jun 19 2014 Eric Shubert <eric@datamatters.us> 0.98.4-0.qt
+- Updated clamav sources to 0.98.4
 * Mon May 26 2014 Eric Shubert <eric@datamatters.us> 0.98.3-1.qt
 - Removed explicit run of freshclam
 - Relocated virus definitions to /var/lib/clamav/
