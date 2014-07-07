@@ -1,7 +1,7 @@
 Name:		clamav
 Summary:	ClamAV for QMail Toaster
 Version:	0.98.4
-Release:	0%{?dist}
+Release:	1%{?dist}
 License:	GPL
 Group:		System Enviroment/Daemons
 Vendor:         QmailToaster
@@ -144,6 +144,34 @@ killall -TERM freshclam > /dev/null 2>&1 || :
 %post
 #-------------------------------------------------------------------------------
 
+# stop clamd and move supervise scripts if present
+oldclamdir=/var/qmail/supervise/clamd
+if [ ! -z "$(which svc 2>/dev/null)" ] \
+      && [ -d "$oldclamdir" ]; then
+  svc -d $oldclamdir
+  mv $oldclamdir /root/clamd.supervise
+fi
+
+# Remove old virus database files if they exist,
+# and move them to the new location
+# Note, as best as I can tell, database files are downloaded as .cvd files,
+# but once freshclam updates them, they're converted to .cld files.
+
+olddir=/usr/share/clamav
+for oldfile in daily.inc main.inc; do
+  if [ -e $olddir/$oldfile ]; then
+    rm -rf $olddir/$oldfile
+  fi
+done
+for dupfile in bytecode daily main; do
+  if [ -e $olddir/$dupfile.cld ] && [ -e $olddir/$dupfile.cvd ]; then
+    rm -f $olddir/$dupfile.cvd
+  fi
+  if [ -e $olddir/$dupfile.* ]; then
+    mv $olddir/$dupfile.* %{_localstatedir}/lib/clamav/.
+  fi
+done
+
 # Use country mirror for virus DB
 ZONES="/usr/share/zoneinfo/zone.tab"
 CONFIG="/etc/sysconfig/clock"
@@ -167,31 +195,17 @@ fi
 
 /sbin/chkconfig --add freshclam  
 /sbin/chkconfig freshclam on
-/sbin/service freshclam start > /dev/null 2>&1
+/sbin/service freshclam restart >/dev/null 2>&1
 
 /sbin/chkconfig --add clamd
 /sbin/chkconfig clamd on
-#/sbin/service clamd start > /dev/null 2>&1
-
-# Remove old virus database files if they exist,
-# and move them to the new location
-# Note, as best as I can tell, database files are downloaded as .cvd files,
-# but once freshclam updates them, they're converted to .cld files.
-
-olddir=/usr/share/clamav
-for oldfile in daily.inc main.inc; do
-  if [ -e $olddir/$oldfile ]; then
-    rm -rf $olddir/$oldfile
-  fi
-done
-for dupfile in bytecode daily main; do
-  if [ -e $olddir/$dupfile.cld ] && [ -e $olddir/$dupfile.cvd ]; then
-    rm -f $olddir/$dupfile.cvd
-  fi
-  if [ -e $olddir/$dupfile.* ]; then
-    mv $olddir/$dupfile.* %{_localstatedir}/lib/clamav/.
-  fi
-done
+/sbin/service clamd status      >/dev/null 2>&1
+rc=$?
+if [ "$rc" == "0" ]; then
+  /sbin/service clamd restart   >/dev/null 2>&1
+else
+  /sbin/service clamd start     >/dev/null 2>&1
+fi
 
 #-------------------------------------------------------------------------------
 %preun
@@ -270,6 +284,8 @@ fi
 #-------------------------------------------------------------------------------
 %changelog
 #-------------------------------------------------------------------------------
+* Mon Jul  7 2014 Eric Shubert <eric@datamatters.us> 0.98.4-1.qt
+- Fixed to remove supervise directories, start clamd
 * Thu Jun 19 2014 Eric Shubert <eric@datamatters.us> 0.98.4-0.qt
 - Updated clamav sources to 0.98.4
 * Mon May 26 2014 Eric Shubert <eric@datamatters.us> 0.98.3-1.qt
