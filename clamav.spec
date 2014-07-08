@@ -254,7 +254,7 @@ fi
 %attr(0755,root,root) %{_initpath}/freshclam
 
 # Configuration
-%attr(0644,root,clamav) %config(noreplace) %{_sysconfdir}/clamd.conf
+%attr(0644,root,clamav) %config            %{_sysconfdir}/clamd.conf
 %attr(0644,root,clamav) %config            %{_sysconfdir}/clamd.conf.sample
 %attr(0640,root,clamav) %config(noreplace) %{_sysconfdir}/freshclam.conf
 %attr(0640,root,clamav) %config            %{_sysconfdir}/freshclam.conf.sample
