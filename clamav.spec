@@ -32,7 +32,7 @@ Obsoletes:	clamav-toaster
 BuildRoot:      %{_topdir}/BUILDROOT/%{name}-%{version}-%{release}.%{_arch}
 
 %define debug_package %{nil}
-%define _initpath     /etc/rc.d/init.d
+%define _initpath     %{_sysconfdir}/rc.d/init.d
 %define ccflags       %{optflags}
 %define ldflags       %{optflags}
 
