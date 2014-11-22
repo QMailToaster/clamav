@@ -1,7 +1,7 @@
 Name:		clamav
 Summary:	ClamAV for QMail Toaster
-Version:	0.98.4
-Release:	2%{?dist}
+Version:	0.98.5
+Release:	0%{?dist}
 License:	GPL
 Group:		System Enviroment/Daemons
 Vendor:         QmailToaster
@@ -284,6 +284,8 @@ fi
 #-------------------------------------------------------------------------------
 %changelog
 #-------------------------------------------------------------------------------
+* Fri Nov 21 2014 Eric Shubert <eric@datamatters.us> 0.98.5-0.qt
+- Updated clamav sources to 0.98.5
 * Tue Jul  8 2014 Eric Shubert <eric@datamatters.us> 0.98.4-2.qt
 - Removed (noreplace) from /etc/clamav.conf file
 * Mon Jul  7 2014 Eric Shubert <eric@datamatters.us> 0.98.4-1.qt
